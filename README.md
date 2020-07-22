@@ -28,6 +28,8 @@
 
 ### 我的作业提交模板
 
+作业地址 https://github.com/GeekUniversity/Frontend-02-Template
+
 ```
 #学号:G20200447020324
 #姓名:张策
