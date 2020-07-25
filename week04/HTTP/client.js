@@ -1,4 +1,5 @@
 const net = require("net");
+const parser = require("./parser");
 
 class Request {
   constructor(options) {
@@ -152,7 +153,7 @@ class ResponseParser {
         this.current = this.WAITING_BODY;
       }
     } else if (this.current === this.WAITING_BODY) {
-      console.log(char, "---char");
+      // console.log(char, "---char");
       this.bodyParser.receiverChar(char);
     }
   }
@@ -222,4 +223,6 @@ void (async function () {
   const response = await request.send();
 
   console.log(response, "---response");
+
+  let dom = parser.parseHTML(response.body);
 })();
