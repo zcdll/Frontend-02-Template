@@ -1,3 +1,6 @@
+const css = require("css");
+
+const EOF = Symbol("EOF");
 let currentToken = null;
 let currentAttribute = null;
 let currentTextNode = null;
@@ -8,6 +11,13 @@ let stack = [
     children: [],
   },
 ];
+
+let rules = [];
+function addCSSRules(text) {
+  const ast = css.parse(text);
+  console.log(JSON.stringify(ast, null, "    "), "---ast");
+  rules.push(...ast.stylesheet.rules);
+}
 
 function emit(token) {
   // if(token.type !== 'text')
@@ -47,6 +57,12 @@ function emit(token) {
     if (top.tagName !== token.tagName) {
       throw new Error("Tag start end doesn't match!");
     } else {
+      // 遇到 style 标签时，执行添加 CSS 规则的曹走
+      // 这里只支持 style 标签，不支持 link 标签
+      if (top.tagName === "style") {
+        addCSSRules(top.children[0].content);
+      }
+
       stack.pop();
     }
 
@@ -63,8 +79,6 @@ function emit(token) {
     currentTextNode.content += token.content;
   }
 }
-
-const EOF = Symbol("EOF");
 
 function data(c) {
   if (c === "<") {
