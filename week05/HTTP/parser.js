@@ -23,6 +23,9 @@ function addCSSRules(text) {
 function computeCSS(element) {
   console.log(rules, "---rules");
   console.log("compute CSS for Element", element);
+  // slice 会复制原数组
+  // reverse 是为了生成 CSS 需要的顺序，例如 html body div
+  const elements = stack.slice().reverse();
 }
 
 function emit(token) {
