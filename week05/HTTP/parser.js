@@ -53,6 +53,37 @@ function match(element, selector) {
   return false;
 }
 
+function specificity(selector) {
+  const p = [0, 0, 0, 0];
+  const selectorParts = selector.split(" ");
+
+  for (const part of selectorParts) {
+    if (part.charAt(0) === "#") {
+      p[1] += 1;
+    } else if (part.charAt(0) === ".") {
+      p[2] += 1;
+    } else {
+      p[3] += 1;
+    }
+  }
+
+  return p;
+}
+
+function compareSpecificity(sp1, sp2) {
+  if (sp1[0] - sp2[0]) {
+    return sp1[0] - sp2[0];
+  }
+  if (sp1[1] - sp2[1]) {
+    return sp1[1] - sp2[1];
+  }
+  if (sp1[2] - sp2[2]) {
+    return sp1[2] - sp2[2];
+  }
+
+  return sp1[3] - sp2[3];
+}
+
 // 计算当前元素的 CSS
 function computeCSS(element) {
   console.log(rules, "---rules");
@@ -87,6 +118,7 @@ function computeCSS(element) {
     if (matched) {
       // 如果匹配到，我们要加入
       console.log("Element ", element, "matched rule ", rule);
+      const sp = specificity(rule.selectors[0]);
       const computedStyle = element.computedStyle;
 
       for (const declaration of rule.declarations) {
@@ -94,7 +126,19 @@ function computeCSS(element) {
           computedStyle[declaration.property] = {};
         }
 
-        computedStyle[declaration.property].value = declaration.value;
+        if (!computedStyle[declaration.property].specificity) {
+          computedStyle[declaration.property].value = declaration.value;
+          computedStyle[declaration.property].specificity = sp;
+        } else if (
+          // 新来的 sp 更大，则替换
+          compareSpecificity(
+            computedStyle[declaration.property].specificity,
+            sp
+          ) < 0
+        ) {
+          computedStyle[declaration.property].value = declaration.value;
+          computedStyle[declaration.property].specificity = sp;
+        }
       }
 
       console.log(element.computedStyle, "---element.computedStyle");
