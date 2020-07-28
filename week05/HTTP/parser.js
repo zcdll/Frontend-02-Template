@@ -87,6 +87,17 @@ function computeCSS(element) {
     if (matched) {
       // 如果匹配到，我们要加入
       console.log("Element ", element, "matched rule ", rule);
+      const computedStyle = element.computedStyle;
+
+      for (const declaration of rule.declarations) {
+        if (!computedStyle[declaration.property]) {
+          computedStyle[declaration.property] = {};
+        }
+
+        computedStyle[declaration.property].value = declaration.value;
+      }
+
+      console.log(element.computedStyle, "---element.computedStyle");
     }
   }
 }
