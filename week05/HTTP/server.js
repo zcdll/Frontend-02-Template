@@ -34,11 +34,16 @@ const server = http.createServer((request, response) => {
             color: red;
             font-size: 20px;
           }
+
+          body #parser {
+            color: pink;
+          }
         </style>
       </head>
 
       <body>
         <div>Hello World!</div>
+        <div id='parser'>HTML Parser!</div>
         <br/>
       </body>
 

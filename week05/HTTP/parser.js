@@ -20,12 +20,47 @@ function addCSSRules(text) {
   rules.push(...ast.stylesheet.rules);
 }
 
+function match(element, selector) {}
+
+// 计算当前元素的 CSS
 function computeCSS(element) {
   console.log(rules, "---rules");
   console.log("compute CSS for Element", element);
   // slice 会复制原数组
   // reverse 是为了生成 CSS 需要的顺序，例如 html body div
   const elements = stack.slice().reverse();
+
+  if (!element.computedStyle) {
+    element.computedStyle = {};
+  }
+
+  // console.log(element, "---element");
+  // console.log(rules, "---rules");
+
+  for (let rule of rules) {
+    const selectorParts = rule.selectors[0].split(" ").reverse();
+
+    if (!match(element, selectorParts[0])) continue;
+
+    let matched = false;
+
+    let j = 1;
+
+    for (let i = 0; i < elements.length; i++) {
+      if (match(elements[i], selectorParts[j])) {
+        j++;
+      }
+    }
+
+    if (j >= selectorParts.length) {
+      matched = true;
+    }
+
+    if (matched) {
+      // 如果匹配到，我们要加入
+      console.log("Element ", element, "matched rule ", rule);
+    }
+  }
 }
 
 function emit(token) {
