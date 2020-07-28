@@ -43,7 +43,7 @@ const server = http.createServer((request, response) => {
 
       <body>
         <div>Hello World!</div>
-        <div id='parser'>HTML Parser!</div>
+        <div id="parser">HTML Parser!</div>
         <br/>
       </body>
 

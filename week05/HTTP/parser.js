@@ -16,11 +16,42 @@ let rules = [];
 
 function addCSSRules(text) {
   const ast = css.parse(text);
-  console.log(JSON.stringify(ast, null, "    "), "---ast");
+  // console.log(JSON.stringify(ast, null, "    "), "---ast");
   rules.push(...ast.stylesheet.rules);
 }
 
-function match(element, selector) {}
+/**
+ * 这里假设 selector 都是简单选择器，假设 class 只有一个
+ * @param {*} element
+ * @param {*} selector
+ */
+function match(element, selector) {
+  // 用 attributes 判断是否是文本节点，是文本节点的话可以直接忽略
+  if (!selector || !element.attributes) {
+    return false;
+  }
+
+  if (selector.charAt(0) === "#") {
+    const attr = element.attributes.filter((attr) => attr.name === "id")[0];
+
+    if (attr && attr.value === selector.replace("#", "")) {
+      return true;
+    }
+  } else if (selector.charAt(0) === ".") {
+    // 理论上来说，这里需要考虑 class
+    const attr = element.attributes.filter((attr) => attr.name === "class")[0];
+
+    if (attr && attr.value === selector.replace(".", "")) {
+      return true;
+    }
+  } else {
+    if (element.tagName === selector) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 // 计算当前元素的 CSS
 function computeCSS(element) {
@@ -33,9 +64,6 @@ function computeCSS(element) {
   if (!element.computedStyle) {
     element.computedStyle = {};
   }
-
-  // console.log(element, "---element");
-  // console.log(rules, "---rules");
 
   for (let rule of rules) {
     const selectorParts = rule.selectors[0].split(" ").reverse();
