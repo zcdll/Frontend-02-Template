@@ -21,6 +21,35 @@ const server = http.createServer((request, response) => {
       response.writeHead(200, { "Content-Type": "text/html" });
 
       // response.end("Hello World!");
+      //   response.end(`
+      //   <html lang="en">
+
+      //   <head>
+      //     <meta charset="UTF-8" />
+      //     <meta name="viewport"
+      //           content="width=device-width, initial-scale=1.0" />
+      //     <title>Document</title>
+      //     <style>
+      //       body div {
+      //         color: red;
+      //         font-size: 20px;
+      //       }
+
+      //       body #parser {
+      //         color: pink;
+      //       }
+      //     </style>
+      //   </head>
+
+      //   <body>
+      //     <div>Hello World!</div>
+      //     <div id='parser'>HTML Parser!</div>
+      //     <br/>
+      //   </body>
+
+      //   </html>
+      //   `);
+      // });
       response.end(`
       <html lang="en">
 
@@ -30,21 +59,27 @@ const server = http.createServer((request, response) => {
               content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
         <style>
-          body div {
-            color: red;
-            font-size: 20px;
+          #container {
+            width: 500px;
+            height: 300px;
+            display: flex;
           }
 
-          body #parser {
-            color: pink;
+          #container #myid {
+            width: 200px;
+          }
+
+          #container .c1 {
+            flex: 1;
           }
         </style>
       </head>
 
       <body>
-        <div>Hello World!</div>
-        <div id="parser">HTML Parser!</div>
-        <br/>
+        <div id="container">
+          <div id="myid" />
+          <div class="c1" />
+        </div>
       </body>
 
       </html>

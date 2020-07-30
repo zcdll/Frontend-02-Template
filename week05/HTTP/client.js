@@ -225,4 +225,6 @@ void (async function () {
   console.log(response, "---response");
 
   let dom = parser.parseHTML(response.body);
+
+  console.log(JSON.stringify(dom, null, "    "));
 })();

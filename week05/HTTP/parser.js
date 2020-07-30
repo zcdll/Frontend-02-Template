@@ -340,7 +340,7 @@ function singleQuotedAttributeValue(c) {
   } else if (c === EOF) {
   } else {
     currentAttribute.value += c;
-    return doubleQuotedAttributeValue;
+    return singleQuotedAttributeValue;
   }
 }
 
@@ -426,4 +426,6 @@ module.exports.parseHTML = function parseHTML(html) {
   state = state(EOF);
 
   console.log(stack[0], "---stack[0]");
+
+  return stack[0];
 };
