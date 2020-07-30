@@ -194,8 +194,6 @@ function layout(element) {
 
   flexLine.mainSpace = mainSpace; // 写循环的技巧
 
-  console.log(items, "---items");
-
   // 计算主轴
 
   if (style.flexWrap === "nowarp" || isAutoMainSize) {
@@ -395,8 +393,6 @@ function layout(element) {
     }
     crossBase += crossSign * (lineCrossSize + step);
   });
-
-  console.log(items, "---items");
 }
 
 module.exports = layout;

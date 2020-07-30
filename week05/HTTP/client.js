@@ -1,5 +1,7 @@
 const net = require("net");
 const parser = require("./parser");
+const render = require("./render");
+const images = require("images");
 
 class Request {
   constructor(options) {
@@ -46,7 +48,6 @@ class Request {
       }
 
       connection.on("data", (data) => {
-        console.log(data.toString());
         parser.receive(data.toString());
         if (parser.isFinished) {
           resolve(parser.response);
@@ -153,7 +154,6 @@ class ResponseParser {
         this.current = this.WAITING_BODY;
       }
     } else if (this.current === this.WAITING_BODY) {
-      // console.log(char, "---char");
       this.bodyParser.receiverChar(char);
     }
   }
@@ -184,7 +184,6 @@ class TrunkedBodyParser {
         this.length += parseInt(char, 16);
       }
     } else if (this.current === this.WAITING_LENGTH_LINE_END) {
-      console.log("WAITING_LENGTH_LINE_END");
       if (char === "\n") {
         this.current = this.READING_TRUNK;
       }
@@ -222,9 +221,13 @@ void (async function () {
 
   const response = await request.send();
 
-  console.log(response, "---response");
-
   let dom = parser.parseHTML(response.body);
 
-  console.log(JSON.stringify(dom, null, "    "));
+  // console.log(JSON.stringify(dom, null, "    "));
+
+  const viewport = images(800, 600);
+
+  render(viewport, dom.children[1].children[3].children[1].children[3]);
+
+  viewport.save("viewport.jpg");
 })();

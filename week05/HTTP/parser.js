@@ -143,8 +143,6 @@ function computeCSS(element) {
           computedStyle[declaration.property].specificity = sp;
         }
       }
-
-      console.log(element.computedStyle, "---element.computedStyle");
     }
   }
 }
@@ -414,8 +412,6 @@ function afterAttributeName(c) {
 }
 
 module.exports.parseHTML = function parseHTML(html) {
-  console.log(html, "---html");
-
   let state = data;
 
   for (const c of html) {
