@@ -72,6 +72,9 @@ function match(element, selector) {
     if (element.tagName === selector) {
       return true;
     }
+    // if (selector.match(/\w+/) && element.tagName === selector.match(/\w+/)[0]) {
+    //   return true;
+    // }
   }
 
   return false;
@@ -81,13 +84,41 @@ function specificity(selector) {
   const p = [0, 0, 0, 0];
   const selectorParts = selector.split(" ");
 
+  /**
+   * 如果有 tagName，则一定在开头，否则会和 className 或者 idName 连起来
+   * 这里 复合选择器可能出现的情况
+   * div
+   * div.c1.c2
+   * div#id.c1.c2.c3
+   * div.c1#id.c2.c3
+   * #id
+   * #id.c1.c2
+   * .c1.c2
+   * .c1.c2#id.c3.c4
+   */
+
   for (const part of selectorParts) {
     if (part.charAt(0) === "#") {
       p[1] += 1;
+      // 计算 class
+      p[2] += part.split(".").length - 1;
     } else if (part.charAt(0) === ".") {
-      p[2] += 1;
+      // 计算 id 可能出现在 中间 的情况
+      if (part.includes("#")) {
+        p[1] += 1;
+      }
+      // 当这里有多个 class 的时候，需要统计 class 的个数
+      p[2] += part.split(".").length - 1;
     } else {
+      // tagName 的优先级最低
       p[3] += 1;
+      // 计算 id 可能出现在 中间 的情况
+      if (part.includes("#")) {
+        p[1] += 1;
+      }
+
+      // 计算 class
+      p[2] += part.split(".").length - 1;
     }
   }
 

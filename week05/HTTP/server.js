@@ -72,21 +72,34 @@ const server = http.createServer((request, response) => {
             background-color: rgb(255, 0, 0);
           }
 
-          #container .c1.c2.c3 {
+          #container .c1 {
             flex: 1;
             background-color: rgb(0, 255, 0);
+            font-size: 50px;
           }
 
+
           #container .c1.c2 {
-            font-size: 50px;
+            background-color: rgb(255, 0, 0);
+          }
+
+          #container .c1.c2.c3 {
+            color: blue;
+            font-size: 100px;
+          }
+
+          #container div.c1#id1.c2.c3 {
+            color: rgb(100, 100, 100);
+            background-color: rgb(0, 0, 255);
           }
         </style>
       </head>
 
       <body>
         <div id="container">
-          <div id="myid" />
-          <div class="c1 c2 c3" />
+          <div id="myid">myid</div>
+          <div class="c1 c2 c3"
+              id='id1'>c1</div>
         </div>
       </body>
 
