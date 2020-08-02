@@ -87,12 +87,16 @@ function compareSpecificity(sp1, sp2) {
   return sp1[3] - sp2[3];
 }
 
+// 复杂，复合，简单
+// 复杂选择器 := 复合选择器 + separator(' ')
+// 复合选择器 := Array<简单选择器> // 针对一个元素
+// 简单选择器 := element selector | attribute selector | id selector
 // 计算当前元素的 CSS
 function computeCSS(element) {
   console.log(rules, "---rules");
   console.log("compute CSS for Element", element);
   // slice 会复制原数组
-  // reverse 是为了生成 CSS 需要的顺序，例如 html body div
+  // reverse 是为了生成 CSS 需要的顺序，例如 html body div，reverser() 之后为 div body html
   const elements = stack.slice().reverse();
 
   if (!element.computedStyle) {
@@ -100,6 +104,7 @@ function computeCSS(element) {
   }
 
   for (let rule of rules) {
+    // 这里 reverse 是为了和上面的顺序一致
     const selectorParts = rule.selectors[0].split(" ").reverse();
 
     if (!match(element, selectorParts[0])) continue;
@@ -147,6 +152,7 @@ function computeCSS(element) {
   }
 }
 
+// 每个 token 的出口
 function emit(token) {
   // if(token.type !== 'text')
   // console.log(token, "---token");
@@ -178,6 +184,7 @@ function emit(token) {
     top.children.push(element);
     element.parent = top;
 
+    // 自封闭的标签不用配对，所以就不用入栈了
     if (!token.isSelfClosing) {
       stack.push(element);
     }
@@ -212,6 +219,7 @@ function emit(token) {
   }
 }
 
+// 每个 token 的入口
 function data(c) {
   if (c === "<") {
     return tagOpen;
@@ -233,6 +241,7 @@ function tagOpen(c) {
   if (c === "/") {
     return endTagOpen;
   } else if (c.match(/^[a-zA-Z]$/)) {
+    // 自封闭标签 和 非自封闭标签 都会走这里，区别是 自封闭的 token 会多一个 isSelfClosing=true 的属性
     currentToken = {
       type: "startTag",
       tagName: "",
