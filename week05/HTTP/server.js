@@ -72,9 +72,13 @@ const server = http.createServer((request, response) => {
             background-color: rgb(255, 0, 0);
           }
 
-          #container .c1 {
+          #container .c1.c2.c3 {
             flex: 1;
             background-color: rgb(0, 255, 0);
+          }
+
+          #container .c1.c2 {
+            font-size: 50px;
           }
         </style>
       </head>

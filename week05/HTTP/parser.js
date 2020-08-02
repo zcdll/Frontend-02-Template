@@ -27,7 +27,7 @@ function addCSSRules(text) {
  * 这里假设 selector 都是简单选择器，假设 class 只有一个
  *
  * 作业 实现复合选择器，实现支持空格的 Class 选择器
- *     当 class 中包含多个的时候，只要有一个符合就可以
+ *     当 attrClasses 和 selectorClasses 中都包含多个的时候，attrClasses 必须包含 selectorClasses 中的全部
  * @param {*} element
  * @param {*} selector
  */
@@ -47,19 +47,27 @@ function match(element, selector) {
     // 理论上来说，这里需要考虑 class
     const attr = element.attributes.filter((attr) => attr.name === "class")[0];
 
-    // 实现复合选择器，实现支持空格的 Class 选择器
-    // 当 class 中包含多个的时候，只要有一个符合就可以
     if (attr && attr.value) {
+      // attrClasses 是元素 class 属性上的类名
+      // selectorClasses 是 style 标签 样式表里面的类名
+
+      /**
+       * 当 attrClasses 和 selectorClasses 中都包含多个的时候
+       * 如果 selectorClasses 中只有一个，那 attrClasses 中只要有这个 class 就能匹配上
+       * 如果 selectorClasses 中有多个，那 attrClasses 必须全部匹配上
+       * 也就是说，attrClasses 必须包含 selectorClasses 中的全部
+       */
       const attrClasses = attr.value.split(" ");
+      const selectorClasses = selector.split(".").slice(1);
 
-      if (attrClasses.includes(selector.replace(".", ""))) {
-        return true;
+      for (let i = 0; i < selectorClasses.length; i++) {
+        if (!attrClasses.includes(selectorClasses[i])) {
+          return false;
+        }
       }
-    }
 
-    // if (attr && attr.value === selector.replace(".", "")) {
-    //   return true;
-    // }
+      return true;
+    }
   } else {
     if (element.tagName === selector) {
       return true;

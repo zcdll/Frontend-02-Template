@@ -22,14 +22,25 @@
     #container .c1 {
       flex: 1;
       background-color: rgb(0, 255, 0);
+      font-size: 50px;
+    }
+
+
+    #container .c1.c2 {
+      background-color: rgb(255, 0, 0);
+    }
+
+    #container .c1.c2.c3 {
+      color: blue;
+      font-size: 100px;
     }
   </style>
 </head>
 
 <body>
   <div id="container">
-    <div id="myid" />
-    <div class="c1" />
+    <div id="myid">myid</div>
+    <div class="c1 c2 c3">c1</div>
   </div>
 </body>
 
