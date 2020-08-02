@@ -25,6 +25,9 @@ function addCSSRules(text) {
 
 /**
  * 这里假设 selector 都是简单选择器，假设 class 只有一个
+ *
+ * 作业 实现复合选择器，实现支持空格的 Class 选择器
+ *     当 class 中包含多个的时候，只要有一个符合就可以
  * @param {*} element
  * @param {*} selector
  */
@@ -44,9 +47,19 @@ function match(element, selector) {
     // 理论上来说，这里需要考虑 class
     const attr = element.attributes.filter((attr) => attr.name === "class")[0];
 
-    if (attr && attr.value === selector.replace(".", "")) {
-      return true;
+    // 实现复合选择器，实现支持空格的 Class 选择器
+    // 当 class 中包含多个的时候，只要有一个符合就可以
+    if (attr && attr.value) {
+      const attrClasses = attr.value.split(" ");
+
+      if (attrClasses.includes(selector.replace(".", ""))) {
+        return true;
+      }
     }
+
+    // if (attr && attr.value === selector.replace(".", "")) {
+    //   return true;
+    // }
   } else {
     if (element.tagName === selector) {
       return true;

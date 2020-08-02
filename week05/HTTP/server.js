@@ -82,7 +82,7 @@ const server = http.createServer((request, response) => {
       <body>
         <div id="container">
           <div id="myid" />
-          <div class="c1" />
+          <div class="c1 c2 c3" />
         </div>
       </body>
 
