@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>对Window上所有的 API 进行分类</title>
+</head>
+
+<body>
+  <script>
+    // https://spec.whatwg.org/
+
+    let names = Object.getOwnPropertyNames(window)
+
+    // console.log(names, '000---names'); // 945
+    console.log(names.length, '000---names.length');
+
+    // 查找某个元素是否在 names 中
+    const name = 'orientation'
+    const test = names.indexOf(name)
+    console.log(test, `查找${name}是否在 names 中`);
+
+    function filterOut(names, props) {
+      let set = new Set()
+
+      props.forEach(item => set.add(item))
+
+      return names.filter(item => !set.has(item))
+    }
+
+    // 1. 过滤掉 ECMA262  https://tc39.es/ecma262/
+    let js = new Set()
+    let objects = [
+      'globalThis', 'Infinity', 'NaN',
+      'undefined', 'eval', 'isFinite',
+      'isNaN', 'parseFloat', 'parseInt',
+      'decodeURI', 'decodeURIComponent', 'encodeURI',
+      'encodeURIComponent', 'Array', 'ArrayBuffer',
+      'BigInt', 'BigInt64Array', 'BigUint64Array',
+      'Boolean', 'DataView', 'Date',
+      'Error', 'EvalError', 'FinalizationRegistry',
+      'Float32Array', 'Float64Array', 'Function',
+      'Int8Array', 'Int16Array', 'Int32Array',
+      'Map', 'Number', 'Object',
+      'Promise', 'Proxy', 'RangeError',
+      'ReferenceError', 'RegExp', 'Set',
+      'SharedArrayBuffer', 'String', 'Symbol',
+      'SyntaxError', 'TypeError', 'Uint8Array',
+      'Uint8ClampedArray', 'Uint16Array', 'Uint32Array',
+      'URIError', 'WeakMap', 'WeakRef',
+      'WeakSet', 'Atomics', 'JSON',
+      'Math', 'Reflect', 'escape', 'unescape'
+    ]
+
+    objects.forEach(item => js.add(item))
+    names = names.filter(item => !js.has(item))
+
+    // console.log(names, '111---names'); // 887
+    console.log(names.length, '111---names.length');
+
+    // 2. 过滤掉 console  https://console.spec.whatwg.org/
+    objects = ['console']
+
+    objects.forEach(item => js.add(item))
+    names = names.filter(item => !js.has(item))
+
+    // console.log(names, '222---names'); // 886
+    console.log(names.length, '222---names.length');
+
+    // 3. 过滤掉 Subclass of Node
+    names = names.filter(item => {
+      try {
+        return !(window[item].prototype instanceof Node)
+      } catch (e) {
+        return true
+      }
+    })
+
+    // console.log(names, '333---names'); // 726
+    console.log(names.length, '333---names.length');
+
+    // 4. 过滤掉 events
+    names = names.filter(item => !item.match(/^on/))
+
+    // console.log(names, '444---names'); // 622
+    console.log(names.length, '444---names.length');
+
+    // 5. 过滤掉 webkit private
+    names = names.filter(item => !item.match(/^webkit/))
+
+    // console.log(names, '555---names'); // 609
+    console.log(names.length, '555---names.length');
+
+    // 6. windowprops  https://html.spec.whatwg.org/multipage/window-object.html
+    js.clear()
+    objects = ["EventTarget", "LegacyUnforgeable", "WindowProxy", "window",
+      "self", "Document", "document", "name", "href", "Location", "location",
+      "History", "history", "CustomElementRegistry", "customElements", "BarProp",
+      "locationbar", "menubar", "personalbar", "scrollbars", "statusbar", "toolbar",
+      "status", "close", "closed", "stop", "focus", "blur", "frames", "length", "top",
+      "opener", "parent", "Element", "frameElement", "open", "LegacyNullToEmptyString",
+      "getter", "object", "Navigator", "navigator", "ApplicationCache", "applicationCache",
+      "originIsolated", "alert", "confirm", "prompt", "print", "postMessage", "WindowPostMessageOptions",
+      "Window", "GlobalEventHandlers", "WindowEventHandlers", "PostMessageOptions", "visible"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '666---names'); // 568
+    console.log(names.length, '666---names.length');
+
+    // 7. Intl  https://tc39.es/ecma402/#intl-object(Living Standard)
+    //          https://www.ecma-international.org/ecma-402/7.0/index.html(Standard)
+    names = names.filter(item => item !== 'Intl')
+
+    // console.log(names, '777---names'); // 567
+    console.log(names.length, '777---names.length');
+
+    // 8. media  https://html.spec.whatwg.org/multipage/media.html
+    js.clear()
+    objects = ["HTMLMediaElement", "Audio", "HTMLElement", "TextTrack",
+      "MediaStream", "MediaSource", "Blob", "MediaError", "TimeRanges",
+      "TextTrackList", "EventTarget", "TextTrackCueList", "TextTrackCue",
+      "Event"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '888---names'); // 557
+    console.log(names.length, '888---names.length');
+
+    // 9. websocket  https://html.spec.whatwg.org/multipage/web-sockets.html#network
+    js.clear()
+    objects = ["WebSocket", "CloseEvent"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '999---names'); // 555
+    console.log(names.length, '999---names.length');
+
+    // 10. Compatibility  https://compat.spec.whatwg.org/
+    js.clear()
+    objects = ['orientation']
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '101010---names'); // 555
+    console.log(names.length, '101010---names.length');
+
+    // 11 console  https://console.spec.whatwg.org/
+    // 只在移动端有，调适的时候需要设置模拟器类型
+    js.clear()
+    objects = ['console']
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '111111---names'); // 555
+    console.log(names.length, '111111---names.length');
+
+    // 12 Dom  https://dom.spec.whatwg.org/
+    js.clear()
+    objects = ["Event", "Window", "CustomEvent", "EventTarget", "AbortController",
+      "AbortSignal", "NonElementParentNode", "DocumentOrShadowRoot", "ParentNode",
+      "NonDocumentTypeChildNode", "ChildNode", "Slottable", "NodeList", "HTMLCollection",
+      "MutationObserver", "MutationRecord", "Node", "Document", "DOMImplementation",
+      "DocumentType", "DocumentFragment", "ShadowRoot", "Element", "NamedNodeMap",
+      "Attr", "CharacterData", "Text", "CDATASection", "ProcessingInstruction",
+      "Comment", "AbstractRange", "StaticRange", "Range", "NodeIterator", "TreeWalker",
+      "NodeFilter", "DOMTokenList", "XPathResult", "XPathExpression", "XPathEvaluatorBase",
+      "XPathEvaluator"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '121212---names'); // 536
+    console.log(names.length, '121212---names.length');
+
+    // 13 Encoding  https://encoding.spec.whatwg.org/
+    js.clear()
+    objects = ["TextDecoderCommon", "TextDecoder", "TextEncoderCommon", "TextEncoder",
+      "GenericTransformStream", "TextDecoderStream", "TextEncoderStream"
+    ]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '131313---names'); // 532
+    console.log(names.length, '131313---names.length');
+
+    // 14 Fetch  https://fetch.spec.whatwg.org/
+    js.clear()
+    objects = ["fetch"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '141414---names'); // 531
+    console.log(names.length, '141414---names.length');
+
+    // 15 Fullscreen  https://fullscreen.spec.whatwg.org/
+    // 这个 API 在 document 上
+    js.clear()
+    objects = ["fullscreen", "fullscreenEnabled", "exitFullscreen", "fullscreenElement",
+      "requestFullscreen", "onfullscreenchange", "onfullscreenerror"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '151515---names'); // 531
+    console.log(names.length, '151515---names.length');
+
+    // 16 MIME Sniffing  https://mimesniff.spec.whatwg.org/
+    js.clear()
+    objects = ["MimeType", "MimeTypeArray"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '161616---names'); // 529
+    console.log(names.length, '161616---names.length');
+
+    // 17 Storage  https://storage.spec.whatwg.org/
+    //             https://html.spec.whatwg.org/multipage/webstorage.html
+    js.clear()
+    objects = ["caches", "indexedDB", "localStorage", "serviceWorkerRegistrations",
+      "sessionStorage", "StorageManager", "Storage", "StorageEvent"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '171717---names'); // 524
+    console.log(names.length, '171717---names.length');
+
+    // 18 Streams  https://streams.spec.whatwg.org/
+    js.clear()
+    objects = ["ReadableStream", "ReadableStreamGenericReader", "ReadableStreamDefaultReader",
+      "ReadableStreamBYOBReader", "ReadableStreamDefaultController", "ReadableByteStreamController",
+      "ReadableStreamBYOBRequest", "WritableStream", "WritableStreamDefaultWriter",
+      "WritableStreamDefaultController", "TransformStream", "TransformStreamDefaultController",
+      "ByteLengthQueuingStrategy", "CountQueuingStrategy"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '181818---names'); // 517
+    console.log(names.length, '181818---names.length');
+
+    // 19 URL  https://url.spec.whatwg.org/
+    js.clear()
+    objects = ["URL", "URLSearchParams"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '191919---names'); // 515
+    console.log(names.length, '191919---names.length');
+
+    // 20 XMLHttpRequest  https://xhr.spec.whatwg.org/
+    js.clear()
+    objects = ["XMLHttpRequest", "FormData", "ProgressEvent"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '202020---names'); // 515
+    console.log(names.length, '202020---names.length');
+
+    // 21 WebGL  https://www.khronos.org/registry/webgl/specs/latest/2.0
+    //           https://www.khronos.org/registry/webgl/specs/latest/1.0/
+    js.clear()
+    objects = ["WebGLContextAttributes", "WebGLObject", "WebGLBuffer", "WebGLFramebuffer", "WebGLProgram",
+      "WebGLRenderbuffer", "WebGLShader", "WebGLTexture", "WebGLUniformLocation", "WebGLActiveInfo",
+      "WebGLShaderPrecisionFormat", "WebGLQuery", "WebGLSampler", "WebGLSync", "WebGLTransformFeedback",
+      "WebGLVertexArrayObject", "WebGL2RenderingContextBase", "WebGL2RenderingContextOverloads", "WebGL2RenderingContext",
+      "WebGLRenderingContextBase", "WebGLRenderingContextOverloads", "WebGLRenderingContext", "WebGLContextEvent"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '212121---names'); // 495
+    console.log(names.length, '212121---names.length');
+
+    // 22 WebGL  https://www.w3.org/TR/webaudio/
+    js.clear()
+    objects = ["WebGLContextAttributes", "WebGLObject", "WebGLBuffer", "WebGLFramebuffer", "WebGLProgram",
+      "WebGLRenderbuffer", "WebGLShader", "WebGLTexture", "WebGLUniformLocation", "WebGLActiveInfo",
+      "WebGLShaderPrecisionFormat", "WebGLQuery", "WebGLSampler", "WebGLSync", "WebGLTransformFeedback",
+      "WebGLVertexArrayObject", "WebGL2RenderingContextBase", "WebGL2RenderingContextOverloads", "WebGL2RenderingContext",
+      "WebGLRenderingContextBase", "WebGLRenderingContextOverloads", "WebGLRenderingContext", "WebGLContextEvent"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '222222---names'); // 495
+    console.log(names.length, '222222---names.length');
+
+    // 23 Web Audio  https://www.w3.org/TR/webaudio/
+    js.clear()
+    objects = ["Audio", "Video", "MediaStream", "MediaStreamTrackAudioSourceNode", "MediaStreamAudioDestinationNode",
+      "AudioNode", "AudioContext", "AnalyserNode", "AudioBuffer", "AudioBufferSourceNode", "AudioDestinationNode",
+      "AudioParam", "AudioListener", "PannerNode", "AudioWorklet", "AudioWorkletGlobalScope", "AudioWorkletNode",
+      "AudioWorkletProcessor", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode",
+      "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode",
+      "MediaStreamAudioSourceNode", "MediaStreamTrack", "PeriodicWave", "OscillatorNode", "StereoPannerNode",
+      "WaveShaperNode", "ScriptProcessorNode", "AudioProcessingEvent", "OfflineAudioContext", "AudioScheduledSourceNode",
+      "NotSupportedError", "AudioWorkletProcessorConstructor", "MessagePort", "DOMString", "AudioWorkletNodeOptions"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '232323---names'); // 462
+    console.log(names.length, '232323---names.length');
+
+    // 24 SyncManager  https://wicg.github.io/background-sync/spec/#sync-manager-interface
+    js.clear()
+    objects = ["SyncManager"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '242424---names'); // 461
+    console.log(names.length, '242424---names.length');
+
+    // 25 Media Source  https://w3c.github.io/media-source/
+    js.clear()
+    objects = ["MediaSource", "SourceBuffer", "SourceBufferList"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '252525---names'); // 457
+    console.log(names.length, '252525---names.length');
+
+    // 26 WebRTC  https://w3c.github.io/webrtc-pc/
+    js.clear()
+    objects = ["RTCRtpSender", "RTCRtpReceiver", "RTCRtpTransceiver", "RTCDtlsTransport", "RTCDtlsTransportState",
+      "RTCIceTransport", "RTCTrackEvent", "RTCDataChannel", "RTCDataChannelEvent", "RTCDTMFSender", "RTCDTMFToneChangeEvent",
+      "RTCStatsReport", "RTCStats", "RTCError", "RTCErrorInit", "RTCErrorDetailType", "RTCErrorEvent", "RTCErrorEventInit",
+      "RTCConfiguration", "RTCIceCredentialType", "RTCIceServer", "RTCIceTransportPolicy", "RTCBundlePolicy", "RTCRtcpMuxPolicy",
+      "RTCSignalingState", "RTCIceGatheringState", "RTCPeerConnectionState", "RTCIceConnectionState", "RTCSdpType",
+      "RTCSessionDescription", "RTCIceCandidate", "RTCPeerConnectionIceEvent", "RTCPeerConnectionIceErrorEvent",
+      "RTCCertificateExpiration", "RTCCertificate", "RTCRtpTransceiverInit", "RTCRtpParameters", "RTCRtpSendParameters",
+      "RTCRtpReceiveParameters", "RTCRtpCodingParameters", "RTCRtpDecodingParameters", "RTCRtpEncodingParameters",
+      "RTCRtcpParameters", "RTCRtpHeaderExtensionParameters", "RTCRtpCodecParameters", "RTCRtpCapabilities",
+      "RTCRtpCodecCapability", "RTCRtpHeaderExtensionCapability", "RTCDtlsFingerprint", "RTCIceParameters",
+      "RTCIceCandidatePair", "RTCIceGathererState", "RTCIceTransportState", "RTCIceRole", "RTCIceComponent",
+      "RTCTrackEventInit", "RTCSctpTransport", "RTCSctpTransportState", "RTCDataChannelInit", "RTCDataChannelEventInit",
+      "RTCDTMFToneChangeEventInit"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '262626---names'); // 438
+    console.log(names.length, '262626---names.length');
+
+    // 26 Canvas  https://w3c.github.io/webrtc-pc/
+    js.clear()
+    objects = ["RTCRtpSender", "RTCRtpReceiver", "RTCRtpTransceiver", "RTCDtlsTransport", "RTCDtlsTransportState",
+      "RTCIceTransport", "RTCTrackEvent", "RTCDataChannel", "RTCDataChannelEvent", "RTCDTMFSender", "RTCDTMFToneChangeEvent",
+      "RTCStatsReport", "RTCStats", "RTCError", "RTCErrorInit", "RTCErrorDetailType", "RTCErrorEvent", "RTCErrorEventInit",
+      "RTCConfiguration", "RTCIceCredentialType", "RTCIceServer", "RTCIceTransportPolicy", "RTCBundlePolicy", "RTCRtcpMuxPolicy",
+      "RTCSignalingState", "RTCIceGatheringState", "RTCPeerConnectionState", "RTCIceConnectionState", "RTCSdpType",
+      "RTCSessionDescription", "RTCIceCandidate", "RTCPeerConnectionIceEvent", "RTCPeerConnectionIceErrorEvent",
+      "RTCCertificateExpiration", "RTCCertificate", "RTCRtpTransceiverInit", "RTCRtpParameters", "RTCRtpSendParameters",
+      "RTCRtpReceiveParameters", "RTCRtpCodingParameters", "RTCRtpDecodingParameters", "RTCRtpEncodingParameters",
+      "RTCRtcpParameters", "RTCRtpHeaderExtensionParameters", "RTCRtpCodecParameters", "RTCRtpCapabilities",
+      "RTCRtpCodecCapability", "RTCRtpHeaderExtensionCapability", "RTCDtlsFingerprint", "RTCIceParameters",
+      "RTCIceCandidatePair", "RTCIceGathererState", "RTCIceTransportState", "RTCIceRole", "RTCIceComponent",
+      "RTCTrackEventInit", "RTCSctpTransport", "RTCSctpTransportState", "RTCDataChannelInit", "RTCDataChannelEventInit",
+      "RTCDTMFToneChangeEventInit"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '262626---names'); // 438
+    console.log(names.length, '262626---names.length');
+
+    // 27 Canvas  https://w3c.github.io/webrtc-pc/
+    js.clear()
+    objects = ["RenderingContext", "HTMLCanvasElement", "BlobCallback", "HTMLOrSVGImageElement", "CanvasImageSource",
+      "CanvasFillRule", "CanvasRenderingContext2DSettings", "ImageSmoothingQuality", "CanvasRenderingContext2D", "CanvasState",
+      "CanvasTransform", "CanvasCompositing", "CanvasImageSmoothing", "CanvasFillStrokeStyles", "CanvasShadowStyles",
+      "CanvasFilters", "CanvasRect", "CanvasDrawPath", "CanvasUserInterface", "CanvasText", "CanvasDrawImage",
+      "CanvasImageData", "CanvasLineCap", "CanvasLineJoin", "CanvasTextAlign", "CanvasTextBaseline", "CanvasDirection",
+      "CanvasPathDrawingStyles", "CanvasTextDrawingStyles", "CanvasPath", "CanvasGradient", "CanvasPattern", "TextMetrics",
+      "ImageData", "Path2D", "ImageBitmapRenderingContext", "ImageBitmapRenderingContextSettings", "OffscreenRenderingContext",
+      "ImageEncodeOptions", "OffscreenRenderingContextId", "OffscreenCanvas", "OffscreenCanvasRenderingContext2D"]
+
+    names = filterOut(names, objects)
+
+    // console.log(names, '272727---names'); // 429
+    console.log(names.length, '272727---names.length');
+
+    // 28 Svg  https://www.w3.org/TR/SVG11/types.html
+    //         https://svgwg.org/svg2-draft/types.html
+    js.clear()
+    objects = ["SVGElement", "SVGAnimatedBoolean", "SVGAnimatedString", "SVGStringList", "SVGAnimatedEnumeration",
+      "SVGAnimatedInteger", "SVGNumber", "SVGAnimatedNumber", "SVGNumberList", "SVGAnimatedNumberList", "SVGLength",
+      "SVGAnimatedLength", "SVGLengthList", "SVGAnimatedLengthList", "SVGAngle", "SVGAnimatedAngle", "SVGColor",
+      "SVGICCColor", "SVGRect", "SVGAnimatedRect", "SVGUnitTypes", "SVGStylable", "SVGLocatable", "SVGTransformable",
+      "SVGTests", "SVGLangSpace", "SVGExternalResourcesRequired", "SVGFitToViewBox", "SVGZoomAndPan", "SVGViewSpec",
+      "SVGURIReference", "SVGCSSRule", "SVGRenderingIntent", "SVGTransformList", "SVGTransform", "SVGPreserveAspectRatio",
+      "SVGPointList", "SVGPoint", "SVGMatrix", "SVGAnimatedTransformList", "SVGAnimatedPreserveAspectRatio"]
+    names = filterOut(names, objects)
+
+    console.log(names, '282828---names'); // 411
+    console.log(names.length, '282828---names.length');
+
+    // 29 CSS  https://www.w3.org/TR/DOM-Level-2-Style/css.html
+    //         https://drafts.csswg.org/css-conditional-3/
+    //         https://drafts.csswg.org/css-counter-styles-3/
+    //         https://drafts.csswg.org/css-animations/
+    //         https://drafts.csswg.org/cssom/
+    //         https://www.w3.org/TR/DOM-Level-2-Style/stylesheets.html
+    js.clear()
+    objects = ["CSSImageValue", "CSSKeywordValue", "CSSMathInvert", "CSSMathMax", "CSSMathMin", "CSSMathNegate",
+      "CSSMathProduct", "CSSMathSum", "CSSMathValue", "CSSMatrixComponent", "CSSNumericArray", "CSSNumericValue",
+      "CSSPerspective", "CSSPositionValue", "CSSRotate", "CSSScale", "CSSSkew", "CSSSkewX", "CSSSkewY", "CSSStyleValue",
+      "CSSTransformComponent", "CSSTransformValue", "CSSTranslate", "CSSUnitValue", "CSSUnparsedValue", "CSSVariableReferenceValue",
+      "StylePropertyMap", "StylePropertyMapReadOnly", "CSSStyleSheet", "CSSRuleList", "CSSRule", "RuleType", "CSSStyleRule",
+      "CSSMediaRule", "CSSFontFaceRule", "CSSPageRule", "CSSImportRule", "CSSCharsetRule", "CSSUnknownRule", "CSSStyleDeclaration",
+      "CSSValue", "UnitTypes", "CSSPrimitiveValue", "CSSValueList", "RGBColor", "Rect", "Counter", "ViewCSS", "DocumentCSS",
+      "DOMImplementationCSS", "ElementCSSInlineStyle", "CSS2Properties", "CSSConditionRule", "CSSSupportsRule", "CSS",
+      "CSSGroupingRule", "CSSCounterStyleRule", "CSSFontFeatureValuesRule", "CSSFontPaletteValuesRule", "CSSKeyframeRule",
+      "CSSKeyframesRule", "CSSMarginRule", "CSSNamespaceRule", "MediaList", "WebKitCSSMatrix", "CSSTransition", "CSSAnimation",
+      "CSSAnimation", "StyleSheet", "StyleSheetList"]
+
+
+    names = filterOut(names, objects)
+
+    console.log(names, '292929---names'); // 358
+    console.log(names.length, '292929---names.length');
+
+
+    // ******************************************** //
+
+    // 查找某个元素是否在 names 中
+    const lastName = 'StyleSheet'
+    const last = names.indexOf(lastName)
+    console.log(last, `最后---查找${lastName}是否在 names 中`);
+
+    names.forEach((item, index) => {
+      if (item.toLocaleLowerCase().includes('StyleSheet')) {
+        console.log(index, names[index], '---names[index]');
+      }
+    })
+
+  </script>
+</body>
+
+</html>
