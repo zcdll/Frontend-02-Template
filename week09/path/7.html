@@ -74,6 +74,84 @@
       }
     }
 
+    // 满二叉树表示的二叉堆
+    class BinaryHeap {
+      constructor(data, compare) {
+        this.data = data
+        this.compare = compare
+      }
+
+      take() {
+        if (!this.data.length) {
+          return
+        }
+
+        let min = this.data[0] // 取出最小值操作的时间复杂度是 O(1)
+        let i = 0
+
+        // fix heap
+        // 取出最小值后，需要 fix 把最小值放到堆顶
+        while (i < this.data.length) {
+          if (i * 2 + 1 >= this.data.length) {
+            break
+          }
+          if (i * 2 + 2 >= this.data.length) {
+            this.data[i] = this.data[i * 2 + 1]
+            i = i * 2 + 1
+            break
+          }
+          if (this.compare(this.data[i * 2 + 1], this.data[i * 2 + 2]) < 0) {
+            this.data[i] = this.data[i * 2 + 1]
+            i = i * 2 + 1
+          } else {
+            this.data[i] = this.data[i * 2 + 2]
+            i = i * 2 + 2
+          }
+        }
+
+        if (i < this.data.length - 1) {
+          this.insertAt(i, this.data.pop())
+        } else {
+          this.data.pop()
+        }
+
+        return min
+      }
+
+      insertAt(i, v) {
+        this.data[i] = v
+        while (i > 0 && this.compare(v, this.data[Math.floor((i - 1) / 2)]) < 0) {
+          this.data[i] = this.data[Math.floor((i - 1) / 2)]
+          this.data[Math.floor((i - 1) / 2)] = v
+          i = Math.floor((i - 1) / 2)
+        }
+      }
+
+      insert(v) {
+        // console.log(v, '---v');
+        this.insertAt(this.data.length, v)
+      }
+
+      get length() {
+        return this.data.length
+      }
+    }
+
+    // let heap = new BinaryHeap([], (a, b) => a - b)
+
+    // heap.insert(3)
+    // heap.insert(2)
+    // heap.insert(31)
+    // heap.insert(6)
+    // heap.insert(0)
+    // heap.insert(1)
+    // heap.insert(13)
+
+    // heap.take()
+    // heap.take()
+    // heap.take()
+    // heap.take()
+
     let map = localStorage['map'] ? JSON.parse(localStorage['map']) : Array(10000).fill(0)
 
     const container = document.querySelector('#container')
@@ -124,7 +202,7 @@
     // 广度优先搜素，找到路径
     async function findPath(map, start, end) {
       const table = Object.create(map)
-      const queue = new Sorted([start], (a, b) => distance(a) - distance(b))
+      const queue = new BinaryHeap([start], (a, b) => distance(a) - distance(b))
 
       function distance(point) {
         return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2
@@ -140,14 +218,14 @@
         // 这里的判断条件只要为 true 就会 return
         // 包括 1 2 对象 等
         // 所以这里遇到 颜色为 black 的点 也会返回
-        console.log(table[y * 100 + x], '---table[y * 100 + x]');
-        console.log(typeof table[y * 100 + x], '---typeof table[y * 100 + x] ');
+        // console.log(table[y * 100 + x], '---table[y * 100 + x]');
+        // console.log(typeof table[y * 100 + x], '---typeof table[y * 100 + x] ');
         // if (typeof table[y * 100 + x] === 'number') {
         if (table[y * 100 + x]) {
           return
         }
 
-        await sleep(0.05)
+        // await sleep(0.05)
 
         // 找过的点标记为 绿色
         container.children[y * 100 + x].style.backgroundColor = 'lightgreen'
@@ -155,7 +233,7 @@
         // map[y * 100 + x] = 2 // 赋值为 2，表示找过这个点了
 
         table[y * 100 + x] = pre
-        queue.give([x, y])
+        queue.insert([x, y])
       }
 
       // 每次出来一个点，进去最多四个点，然后依次搜索
@@ -165,7 +243,7 @@
         // 找到终点标记为 红色
         if (x === end[0] && y === end[1]) {
           container.children[y * 100 + x].style.backgroundColor = 'red'
-          console.log(table, '---table');
+          // console.log(table, '---table');
           const path = []
           // 绘制找的路径
           // 从后向前绘制
@@ -173,7 +251,7 @@
           while (x != start[0] || y != start[1]) {
             path.push(map[y * 100 + x])
             const temp = table[y * 100 + x].slice()
-            console.log(temp, '---temp');
+            // console.log(temp, '---temp');
             [x, y] = temp
 
 
