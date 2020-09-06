@@ -68,10 +68,20 @@
       }
     }
 
-    console.log(source, '---source');
+    console.log(JSON.parse(JSON.stringify(source)), 'begin---source');
 
     function Expression(tokens) {
+      if (source[0].type === 'AdditiveExpression' && source[1] && source[1].type === 'EOF') {
+        let node = {
+          type: 'Expression',
+          children: [source.shift(), source.shift()]
+        }
+        source.unshift(node)
+        return node
+      }
 
+      AdditiveExpression(source)
+      return Expression(source)
     }
 
     function AdditiveExpression(source) {
@@ -165,9 +175,9 @@
       return MultiplicativeExpression(source)
     }
 
-    AdditiveExpression(source)
+    Expression(source)
 
-    console.log(source, '---source');
+    console.log(source, 'end---source');
 
   </script>
 </body>
