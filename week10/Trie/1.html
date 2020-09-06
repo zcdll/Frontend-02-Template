@@ -18,13 +18,24 @@
       }
 
       insert(word) {
+        console.log('***********************************************************');
+        console.log(word, '---word');
         let node = this.root
+        console.log(JSON.parse(JSON.stringify(node)), '---JSON.parse(JSON.stringify(node))');
         for (const c of word) {
           if (!node[c]) {
             node[c] = Object.create(null)
           }
-
+          console.log(c, '---c');
+          console.log(node[c], '111---node[c]');
+          console.log(node, '111---node');
+          // console.log(JSON.parse(JSON.stringify(node[c])), '---JSON.parse(JSON.stringify(node[c]))');
+          // 这里的 node 有点类似于 指针，node[c]每次拿到值等于指针赋值
+          // 最终的数据保存在  this.root 中，并没有消失
+          // node 中只保存某个指针下的数据
           node = node[c]
+          console.log(node, '222---node');
+          // console.log(JSON.parse(JSON.stringify(node)), '---JSON.parse(JSON.stringify(node))');
         }
 
         if (!($ in node)) {
@@ -54,14 +65,15 @@
     function randomWord(length) {
       let s = ""
       for (let i = 0; i < length; i++) {
-        s += String.fromCharCode(Math.random() * 26 + 'a'.charCodeAt(0))
+        const temp = Math.random() * 26 + 'a'.charCodeAt(0)
+        s += String.fromCharCode(temp)
       }
       return s
     }
 
     let trie = new Trie()
 
-    for (let i = 0; i < 100000; i++) {
+    for (let i = 0; i < 100; i++) {
       trie.insert(randomWord(4))
     }
 
