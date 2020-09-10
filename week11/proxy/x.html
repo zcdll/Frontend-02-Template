@@ -10,12 +10,22 @@
 
 <body>
   <script>
+    const callbacks = []
+
     const object = {
       a: 1,
       b: 2
     }
 
     const po = reactive(object)
+
+    effect(() => {
+      console.log(po.a, '---po.a');
+    })
+
+    function effect(callback) {
+      callbacks.push(callback)
+    }
 
     function reactive(object) {
       return new Proxy(object, {
@@ -24,6 +34,10 @@
 
           // 这里的改变需要手动操作了，没有默认行为了
           obj[prop] = value
+
+          for (const callback of callbacks) {
+            callback()
+          }
 
           // 改变后 obj 就变了，不用返回 obj 或者 返回 obj[prop]
           return true
