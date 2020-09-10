@@ -15,17 +15,27 @@
       b: 2
     }
 
-    const po = new Proxy(object, {
-      set(obj, prop, value) {
-        console.log(obj, prop, value, '---obj, prop, value');
+    const po = reactive(object)
 
-        // 这里的改变需要手动操作了，没有默认行为了
-        obj[prop] = value
+    function reactive(object) {
+      return new Proxy(object, {
+        set(obj, prop, value) {
+          console.log(obj, prop, value, '---obj, prop, value');
 
-        // 改变后 obj 就变了，不用返回 obj 或者 返回 obj[prop]
-        return true
-      }
-    })
+          // 这里的改变需要手动操作了，没有默认行为了
+          obj[prop] = value
+
+          // 改变后 obj 就变了，不用返回 obj 或者 返回 obj[prop]
+          return true
+        },
+        get(obj, prop) {
+          console.log(obj, prop, '---obj, prop');
+
+          // 这里想要写 return，就是想要取的属性
+          return obj[prop]
+        }
+      })
+    }
   </script>
 </body>
 
