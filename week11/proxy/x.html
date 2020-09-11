@@ -12,16 +12,17 @@
   <script>
     let usedReactivities = []
     const callbacks = new Map()
+    const reactivities = new Map()
 
     const object = {
-      a: 1,
+      a: { b: 1 },
       b: 2
     }
 
     const po = reactive(object)
 
     effect(() => {
-      console.log(po.a, '---po.a');
+      console.log(po.a.b, '---po.a.b');
     })
 
     function effect(callback) {
@@ -47,18 +48,17 @@
     }
 
     function reactive(object) {
-      return new Proxy(object, {
+      if (reactivities.has(object)) {
+        return reactivities.get(object)
+      }
+      const proxy = new Proxy(object, {
         set(obj, prop, value) {
-          console.log(obj, prop, value, 'set---obj, prop, value');
-          console.log(callbacks, '---callbacks');
 
           // 这里的改变需要手动操作了，没有默认行为了
           obj[prop] = value
 
           if (callbacks.get(obj) && callbacks.get(obj).get(prop)) {
             for (const callback of callbacks.get(obj).get(prop)) {
-              console.log(callbacks.get(obj).get(prop), '---callbacks.get(obj).get(prop)');
-              console.log(callback, '---callback');
               callback()
             }
           }
@@ -70,10 +70,19 @@
         get(obj, prop) {
           console.log(obj, prop, 'get---obj, prop');
           usedReactivities.push([obj, prop])
+
+          if (typeof obj[prop] === 'object') {
+            return reactive(obj[prop])
+          }
+
           // 这里想要写 return，就是想要取的属性
           return obj[prop]
         }
       })
+
+      reactivities.set(object, proxy)
+
+      return proxy
     }
   </script>
 </body>
