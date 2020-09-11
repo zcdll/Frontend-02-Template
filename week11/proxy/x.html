@@ -10,7 +10,8 @@
 
 <body>
   <script>
-    const callbacks = []
+    let usedReactivities = []
+    const callbacks = new Map()
 
     const object = {
       a: 1,
@@ -24,27 +25,51 @@
     })
 
     function effect(callback) {
-      callbacks.push(callback)
+      // callbacks.push(callback)
+
+      usedReactivities = []
+
+      callback()
+
+      console.log(usedReactivities, '---usedReactivities');
+
+      for (const reactivity of usedReactivities) {
+        if (!callbacks.has(reactivity[0])) {
+          callbacks.set(reactivity[0], new Map())
+        }
+
+        if (!callbacks.get(reactivity[0]).has(reactivity[1])) {
+          callbacks.get(reactivity[0]).set(reactivity[1], [])
+        }
+
+        callbacks.get(reactivity[0]).get(reactivity[1]).push(callback)
+      }
     }
 
     function reactive(object) {
       return new Proxy(object, {
         set(obj, prop, value) {
-          console.log(obj, prop, value, '---obj, prop, value');
+          console.log(obj, prop, value, 'set---obj, prop, value');
+          console.log(callbacks, '---callbacks');
 
           // 这里的改变需要手动操作了，没有默认行为了
           obj[prop] = value
 
-          for (const callback of callbacks) {
-            callback()
+          if (callbacks.get(obj) && callbacks.get(obj).get(prop)) {
+            for (const callback of callbacks.get(obj).get(prop)) {
+              console.log(callbacks.get(obj).get(prop), '---callbacks.get(obj).get(prop)');
+              console.log(callback, '---callback');
+              callback()
+            }
           }
 
           // 改变后 obj 就变了，不用返回 obj 或者 返回 obj[prop]
-          return true
+          // return true
+          return obj[prop]
         },
         get(obj, prop) {
-          console.log(obj, prop, '---obj, prop');
-
+          console.log(obj, prop, 'get---obj, prop');
+          usedReactivities.push([obj, prop])
           // 这里想要写 return，就是想要取的属性
           return obj[prop]
         }
