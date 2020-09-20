@@ -24,16 +24,25 @@ class Carousel extends Component {
       this.root.appendChild(child);
     }
 
-    let current = 0;
+    let currentIndex = 0;
     setInterval(() => {
       let children = this.root.children;
+      let nextIndex = (currentIndex + 1) % children.length;
 
-      ++current;
-      current = current % 4;
-      for (const child of children) {
-        child.style.transform = `translateX(-${100 * current}%)`;
-      }
-    }, 3000);
+      let current = children[currentIndex];
+      let next = children[nextIndex];
+
+      next.style.transition = "none";
+      next.style.transform = `translateX(${100 - 100 * nextIndex}%)`;
+
+      setTimeout(() => {
+        next.style.transition = ""; //  置为空会让 class 中的样式生效
+        current.style.transform = `translateX(${-100 - 100 * currentIndex}%)`;
+        next.style.transform = `translateX(${-100 * nextIndex}%)`;
+
+        currentIndex = nextIndex;
+      }, 16);
+    }, 1000);
 
     return this.root;
   }
