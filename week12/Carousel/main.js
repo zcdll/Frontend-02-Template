@@ -13,7 +13,6 @@ class Carousel extends Component {
   }
 
   render() {
-    console.log(this.attributes.src, "---this.attributes.src");
     this.root = document.createElement("div");
 
     this.root.classList.add("carousel");
@@ -26,30 +25,42 @@ class Carousel extends Component {
 
     let position = 0;
     this.root.addEventListener("mousedown", (event) => {
-      console.log("mousedown");
       let children = this.root.children;
       let startX = event.clientX;
 
       const move = (event) => {
-        console.log("mousemove");
         const x = event.clientX - startX;
 
-        for (const child of children) {
-          child.style.transition = "none";
-          child.style.transform = `translate(${-position * 500 + x}px)`;
+        // let current = position - Math.round((x - (x % 500)) / 500);
+        let current = position - (x - (x % 500)) / 500;
+
+        for (const offset of [-1, 0, 1]) {
+          let pos = current + offset;
+          pos = (pos + children.length) % children.length;
+
+          children[pos].style.transition = "none";
+          children[pos].style.transform = `translate(${
+            -pos * 500 + offset * 500 + (x % 500)
+          }px)`;
         }
       };
 
       const up = (event) => {
-        console.log("mouseup");
-
         const x = event.clientX - startX;
 
         position = position - Math.round(x / 500);
 
-        for (const child of children) {
-          child.style.transition = "";
-          child.style.transform = `translate(${-position * 500}px)`;
+        for (const offset of [
+          0,
+          -Math.sign(Math.round(x / 500) - x + 250 * Math.sign(x)),
+        ]) {
+          let pos = position + offset;
+          pos = (pos + children.length) % children.length;
+
+          children[pos].style.transition = "";
+          children[pos].style.transform = `translate(${
+            -pos * 500 + offset * 500
+          }px)`;
         }
 
         document.removeEventListener("mousemove", move);
