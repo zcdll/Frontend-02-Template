@@ -16,11 +16,24 @@ class Carousel extends Component {
     console.log(this.attributes.src, "---this.attributes.src");
     this.root = document.createElement("div");
 
+    this.root.classList.add("carousel");
+
     for (const record of this.attributes.src) {
-      let child = document.createElement("img");
-      child.src = record;
+      let child = document.createElement("div");
+      child.style.backgroundImage = `url(${record})`;
       this.root.appendChild(child);
     }
+
+    let current = 0;
+    setInterval(() => {
+      let children = this.root.children;
+
+      ++current;
+      current = current % 4;
+      for (const child of children) {
+        child.style.transform = `translateX(-${100 * current}%)`;
+      }
+    }, 3000);
 
     return this.root;
   }
