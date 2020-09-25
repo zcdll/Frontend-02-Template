@@ -1,4 +1,4 @@
-import { Component, createElement } from "./framework.js";
+import { Component } from "./framework.js";
 
 export class Carousel extends Component {
   constructor() {
