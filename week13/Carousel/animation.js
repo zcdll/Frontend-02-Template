@@ -7,16 +7,22 @@ const PAUSE_START = Symbol("pause-start");
 
 export class Timeline {
   constructor() {
-    this[TICK] = () => {
-      console.log("tick");
-      requestAnimationFrame(this[TICK]);
-    };
+    this.state = "Inited";
+    // this[TICK] = () => {
+    //   console.log("tick");
+    //   requestAnimationFrame(this[TICK]);
+    // };
 
     this[ANIMATIONS] = new Set();
     this[START_TIME] = new Map();
   }
 
   start() {
+    if (this.state !== "Inited") {
+      return;
+    }
+    this.state = "Started";
+
     const startTime = Date.now();
 
     this[PAUSE_TIME] = 0;
@@ -52,17 +58,26 @@ export class Timeline {
   }
 
   pause() {
+    if (this.state !== "Started") {
+      return;
+    }
+    this.state = "Paused";
     this[PAUSE_START] = Date.now();
     cancelAnimationFrame(this[TICK_HANDLER]);
   }
 
   resume() {
+    if (this.state !== "Paused") {
+      return;
+    }
+    this.state = "Started";
     this[PAUSE_TIME] += Date.now() - this[PAUSE_START];
     this[TICK]();
   }
 
   reset() {
     this.pause();
+    this.state = "Inited";
     // startTime = Date.now();
     this[PAUSE_TIME] = 0;
     this[PAUSE_START] = 0;
