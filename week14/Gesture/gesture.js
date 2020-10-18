@@ -167,7 +167,7 @@ export class Recognizer {
         startY: context.startY,
         clientX: point.clientX,
         clientY: point.clientY,
-        isVertical: Math.abs(dx) < Math.abs(dy),
+        isVertical: context.isVertical,
       });
     }
 
@@ -186,7 +186,6 @@ export class Recognizer {
 
   end(point, context) {
     if (context.isTap) {
-      console.log("tap");
       this.dispatcher.dispatch("tap", {});
       clearTimeout(context.handler);
     }
@@ -220,7 +219,7 @@ export class Recognizer {
         startY: context.startY,
         clientX: point.clientX,
         clientY: point.clientY,
-        isVertical: Math.abs(dx) < Math.abs(dy),
+        isVertical: context.isVertical,
         isFlick: context.isFlick,
         velocity: v,
       });
@@ -236,7 +235,7 @@ export class Recognizer {
         startY: context.startY,
         clientX: point.clientX,
         clientY: point.clientY,
-        isVertical: Math.abs(dx) < Math.abs(dy),
+        isVertical: context.isVertical,
         isFlick: context.isFlick,
       });
     }

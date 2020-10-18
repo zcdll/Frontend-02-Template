@@ -15,8 +15,8 @@
 
     enableGesture(document.documentElement)
 
-    document.documentElement.addEventListener('tap', () => {
-      console.log('tap event trigger!');
+    document.documentElement.addEventListener('tap', (event) => {
+      console.log(event, '---tap event trigger event');
     })
   </script>
 </body>
