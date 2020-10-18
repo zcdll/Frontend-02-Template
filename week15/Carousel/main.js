@@ -5,13 +5,35 @@ import { Timeline, Animation } from "./animation.js";
 // document.body.appendChild(a);
 
 const d = [
-  "https://i.loli.net/2020/09/23/Ci3punBNl7WSQa8.jpg",
-  "https://i.loli.net/2020/09/23/BLYAGFQ7v1nqmzU.jpg",
-  "https://i.loli.net/2020/09/23/EJRyWxHau23Si9r.jpg",
-  "https://i.loli.net/2020/09/23/EiguaA8VLphFXrw.jpg",
+  {
+    img: "https://i.loli.net/2020/09/23/Ci3punBNl7WSQa8.jpg",
+    url: "https://www.google.com",
+  },
+  {
+    img: "https://i.loli.net/2020/09/23/BLYAGFQ7v1nqmzU.jpg",
+    url: "https://www.google.com",
+  },
+  {
+    img: "https://i.loli.net/2020/09/23/EJRyWxHau23Si9r.jpg",
+    url: "https://www.google.com",
+  },
+  {
+    img: "https://i.loli.net/2020/09/23/EiguaA8VLphFXrw.jpg",
+    url: "https://www.google.com",
+  },
 ];
 
-let a = <Carousel src={d} />;
+let a = (
+  <Carousel
+    src={d}
+    onChange={(event) =>
+      console.log(event.detail.position, "---event.detail.position")
+    }
+    onClick={(event) =>
+      console.log(event.detail.data.url, "---event.detail.data.url")
+    }
+  />
+);
 
 a.mountTo(document.body);
 
