@@ -98,6 +98,14 @@ const start = (point, context) => {
   console.log(context, "---context");
   (context.startX = point.clientX), (context.startY = point.clientY);
 
+  context.points = [
+    {
+      t: Date.now(),
+      x: point.clientX,
+      y: point.clientY,
+    },
+  ];
+
   context.isTap = true;
   context.isPan = false;
   context.isPress = false;
@@ -137,6 +145,16 @@ const move = (point, context) => {
     console.log("pan");
   }
 
+  context.points = context.points.filter((point) => Date.now() - point.t < 500);
+
+  context.points.push([
+    {
+      t: Date.now(),
+      x: point.clientX,
+      y: point.clientY,
+    },
+  ]);
+
   // console.log(
   //   point.clientX,
   //   point.clientY,
@@ -165,6 +183,30 @@ const end = (point, context) => {
 
   if (context.isPress) {
     console.log("pressend");
+  }
+
+  context.points = context.points.filter((point) => Date.now() - point.t < 500);
+
+  // v 像素每毫秒
+  let d, v;
+
+  if (!context.points.length) {
+    v = 0;
+  } else {
+    d = Math.sqrt(
+      (point.clientX - context.points[0].x) ** 2 +
+        (point.clientY - context.points[0].y) ** 2
+    );
+    v = d / (Date.now() - context.points[0].t);
+  }
+
+  console.log(v, "---v");
+
+  if (v > 1.5) {
+    console.log("flick");
+    context.isFlick = true;
+  } else {
+    context.isFlick = false;
   }
 };
 
