@@ -40,31 +40,85 @@ element.addEventListener("touchcancel", (event) => {
   }
 });
 
+let handler;
+let startX, startY;
+let isPan = false,
+  isTap = true;
+
 const start = (point) => {
-  console.log(
-    point.clientX,
-    point.clientY,
-    "start---point.clientX, point.clientY"
-  );
+  (startX = point.clientX), (startY = point.clientY);
+
+  isTap = true;
+  isPan = false;
+  isPress = false;
+
+  handler = setTimeout(() => {
+    isTap = false;
+    isPan = false;
+    isPress = true;
+
+    handler = null;
+
+    console.log("press");
+  }, 500);
+
+  // console.log(
+  //   point.clientX,
+  //   point.clientY,
+  //   "start---point.clientX, point.clientY"
+  // );
 };
 
 const move = (point) => {
-  console.log(
-    point.clientX,
-    point.clientY,
-    "move---point.clientX, point.clientY"
-  );
+  let dx = point.clientX - startX,
+    dy = point.clientY - startY;
+
+  if (!isPan && dx ** 2 + dy ** 2 > 100) {
+    isTap = false;
+    isPan = true;
+    isPress = false;
+
+    console.log("panstart");
+    clearTimeout(handler);
+  }
+
+  if (isPan) {
+    console.log(dx, dy, "---dx, dy");
+    console.log("pan");
+  }
+
+  // console.log(
+  //   point.clientX,
+  //   point.clientY,
+  //   "move---point.clientX, point.clientY"
+  // );
 };
 
 const end = (point) => {
-  console.log(
-    point.clientX,
-    point.clientY,
-    "end---point.clientX, point.clientY"
-  );
+  // console.log(
+  //   point.clientX,
+  //   point.clientY,
+  //   "end---point.clientX, point.clientY"
+  // );
+
+  if (isTap) {
+    console.log("tap");
+    clearTimeout(handler);
+  }
+
+  if (isPan) {
+    console.log("panend");
+  }
+
+  console.log(isPress, "---isPress");
+
+  if (isPress) {
+    console.log("pressend");
+  }
 };
 
 const cancel = (point) => {
+  clearTimeout(handler);
   console.log(
     point.clientX,
     point.clientY,
