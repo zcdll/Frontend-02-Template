@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>Gesture</title>
+  <script src='./gesture.js'></script>
+</head>
+
+<body>
+  <script type='module'>
+    import { enableGesture } from './gesture.js'
+
+    enableGesture(document.documentElement)
+
+    document.documentElement.addEventListener('tap', (event) => {
+      console.log(event, '---tap event trigger event');
+    })
+  </script>
+</body>
+
+</html>
