@@ -1,5 +1,7 @@
 var assert = require("assert");
-var add = require("../add");
+// var add = require("../add");
+
+import { add } from "../add";
 
 describe("add function testing", () => {
   it("2+3 shoule be equal to 5", function () {
