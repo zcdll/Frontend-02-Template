@@ -1,14 +1,10 @@
-// export function add(a, b) {
-//   return a + b;
-// }
-
-function add(a, b) {
+export function add(a, b) {
   return a + b;
 }
 
-function multiple(a, b) {
+export function multiple(a, b) {
   return a * b;
 }
 
-module.exports.add = add;
-module.exports.multiple = multiple;
+// module.exports.add = add;
+// module.exports.multiple = multiple;

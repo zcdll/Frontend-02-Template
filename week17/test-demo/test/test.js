@@ -1,9 +1,9 @@
 var assert = require("assert");
 
-// import { add } from "../add";
+import { add, multiple } from "../add";
 
-var add = require("../add").add;
-var multiple = require("../add").multiple;
+// var add = require("../add").add;
+// var multiple = require("../add").multiple;
 
 describe("add function testing", () => {
   it("2+3 shoule be equal to 5", function () {
