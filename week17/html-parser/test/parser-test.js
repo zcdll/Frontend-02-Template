@@ -97,6 +97,15 @@ describe("parse HTML:", () => {
 
   it("<>", function () {
     const tree = parseHTML("<>");
+    // console.log(tree, "---tree");
+
+    // assert.equal(tree.children[0].tagName, "a");
+    assert.equal(tree.children.length, 1);
+    assert.equal(tree.children[0].type, "text");
+  });
+
+  it("<div> </diva>", function () {
+    const tree = parseHTML("<div> </diva>");
     console.log(tree, "---tree");
 
     // assert.equal(tree.children[0].tagName, "a");
